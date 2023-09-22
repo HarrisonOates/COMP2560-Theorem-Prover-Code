@@ -9,7 +9,6 @@ Require Import Multiset.
 Import ListNotations.
 
 Variable A : Set.
-Variable compare : A -> A -> bool.
 Variable leq : A -> A -> Prop.
 
 Hypothesis leq_trans : forall a b c, leq a b -> leq b c -> leq a c.
