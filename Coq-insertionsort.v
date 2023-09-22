@@ -13,7 +13,7 @@ Variable compare : A -> A -> bool.
 Variable leq : A -> A -> Prop.
 
 Hypothesis leq_trans : forall a b c, leq a b -> leq b c -> leq a c.
-Hypothesis leq_assoc : forall a b, ~ leq a b -> leq b a.
+Hypothesis leq_total : forall a b, ~ leq a b -> leq b a.
 Hypothesis leq_dec : forall a b, {leq a b} + {~ leq a b}.
 
 Variable eqA : relation A.
@@ -78,7 +78,7 @@ intros a l S. induction S; simpl.
     - apply sorted_singleton.
     - case_eq (leq_dec l n).
         + intros. apply sorted_cons. apply l0. apply sorted_singleton.
-        + intros.  apply sorted_cons. apply leq_assoc. apply n0. apply sorted_singleton.
+        + intros.  apply sorted_cons. apply leq_total. apply n0. apply sorted_singleton.
     - case_eq (leq_dec l m).
         + intros.
             case_eq (leq_dec l n).
@@ -86,7 +86,7 @@ intros a l S. induction S; simpl.
                 apply sorted_cons. apply l1.
                 apply sorted_cons. apply H. apply S.
             * intros. 
-                apply sorted_cons. apply leq_assoc. apply n0.
+                apply sorted_cons. apply leq_total. apply n0.
                 apply sorted_cons. apply l0.
                 apply S. 
         + intros.
