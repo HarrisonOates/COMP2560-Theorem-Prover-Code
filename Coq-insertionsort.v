@@ -1,4 +1,4 @@
-(*  This is a totally correct polymorphic implementation of insertion sort.
+(*  This is a totally correct polymorphic implementation of insertion sort 
  *  Finished 19th August 2023 by Harrison Oates.
  *)
 
@@ -13,7 +13,8 @@ Variable compare : A -> A -> bool.
 Variable leq : A -> A -> Prop.
 
 Hypothesis leq_trans : forall a b c, leq a b -> leq b c -> leq a c.
-Hypothesis leq_total : forall a b, if compare a b then leq a b else leq b a.
+Hypothesis leq_assoc : forall a b, ~ leq a b -> leq b a.
+Hypothesis leq_dec : forall a b, {leq a b} + {~ leq a b}.
 
 Variable eqA : relation A.
 Hypothesis eqA_dec : forall x y : A, {eqA x y} + {~ eqA x y}.
@@ -36,7 +37,7 @@ Fixpoint list_contents (l:list A) : multiset A :=
 Fixpoint insert (i : A) (l : list A) :=
     match l with
     | [] => [i]
-    | x :: xs => if compare i x then (i :: x :: xs) else (x :: insert i xs)
+    | x :: xs => if leq_dec i x then (i :: x :: xs) else (x :: insert i xs)
     end.
 
 Fixpoint sort (l : list A) : list A :=
@@ -51,8 +52,8 @@ Proof.
     intros.
     induction l as [ | h t IH].
     - simpl. unfold meq. intros. reflexivity.
-    - simpl. case_eq (compare x h).
-        + intros. simpl. unfold meq. intros. reflexivity.
+    - simpl. case_eq (leq_dec x h).
+        + intros. simpl. unfold meq. reflexivity.
         + intros.  simpl. unfold meq. intros. simpl. unfold meq in IH. rewrite IH. simpl. 
             destruct (eqA_dec h a). destruct (eqA_dec x a). 
             reflexivity.
@@ -75,34 +76,23 @@ Lemma insert_is_sorted: forall l a,
 Proof.
 intros a l S. induction S; simpl.
     - apply sorted_singleton.
-    - case_eq (compare l n).
-        + intros. apply sorted_cons. pose proof (leq_total l n) as L.
-            rewrite H in L. apply L.
-            apply sorted_singleton.
-        + intros.  apply sorted_cons. pose proof (leq_total l n) as L.
-            rewrite H in L. apply L.
-            apply sorted_singleton.
-    - case_eq (compare l m).
+    - case_eq (leq_dec l n).
+        + intros. apply sorted_cons. apply l0. apply sorted_singleton.
+        + intros.  apply sorted_cons. apply leq_assoc. apply n0. apply sorted_singleton.
+    - case_eq (leq_dec l m).
         + intros.
-            case_eq (compare l n).
+            case_eq (leq_dec l n).
             * intros.
-                apply sorted_cons. pose proof (leq_total l n) as L.
-                rewrite H1 in L. apply L.
+                apply sorted_cons. apply l1.
                 apply sorted_cons. apply H. apply S.
-            * intros. pose proof (leq_total l n) as L.
-                apply sorted_cons.
-                rewrite H1 in L.
-                apply L.
-                apply sorted_cons.
-                pose proof (leq_total l m) as L2.
-                rewrite H0 in L2.
-                apply L2.
+            * intros. 
+                apply sorted_cons. apply leq_assoc. apply n0.
+                apply sorted_cons. apply l0.
                 apply S. 
         + intros.
-            case_eq (compare l n).
+            case_eq (leq_dec l n).
             * intros.
-                apply sorted_cons. pose proof (leq_total l n) as L.
-                rewrite H1 in L. apply L.
+                apply sorted_cons. apply l0.
                 apply sorted_cons. apply H.
                 apply S. 
             * intros.
