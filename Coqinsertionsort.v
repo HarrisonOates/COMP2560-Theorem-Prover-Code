@@ -7,8 +7,9 @@ Require Import Relations.
 Require Import List.
 Require Import Multiset.
 Import ListNotations.
+Require Extraction.
 
-Variable A : Set.
+Variable A : Type.
 Variable leq : A -> A -> Prop.
 
 Hypothesis leq_trans : forall a b c, leq a b -> leq b c -> leq a c.
@@ -111,3 +112,6 @@ Proof.
     - simpl. apply sorted_nil.
     - simpl. apply insert_is_sorted. apply IH.
 Qed.  
+
+Extraction Language Haskell.
+Recursive Extraction sort.

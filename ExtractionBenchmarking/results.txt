@@ -1,0 +1,9 @@
+Benchmark conducted on Ryzen 5 3600, 3200Mhz system.
+
+For 1000 elements:
+Verified: 0.21 secs, 168,816,784 bytes
+Native: 0.17 secs, 149,335,248 bytes
+
+For 10000 elements:
+Verified: 18.17 secs, 17,261,166,184 bytes
+Native: 16.63 secs, 16,014,955,176 bytes
